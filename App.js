@@ -7,7 +7,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 export default function App() {
   return (
     <View style={styles.container}>
-      <Text>this is my app</Text>
+      <Text>test</Text>
       <StatusBar style="auto" />
     </View>
   );
