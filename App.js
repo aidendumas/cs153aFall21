@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import * as React from 'react';
-import { StyleSheet, Text, View, Button, Image, TouchableOpacity} from 'react-native';
+import { StyleSheet, Text, View, Button, Image, TouchableOpacity, TextInput, } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
@@ -48,6 +48,24 @@ const StackNav = () => {
           }}
         />
 
+        <Stack.Screen
+          name="Preferences"
+          component={PreferencesScreen}
+          options={{
+            title: 'Preferences',
+            headerStyle: {
+              backgroundColor: 'snow',
+            },
+            headerTintColor: 'black',
+            headerTitleStyle: {
+              fontWeight: 'normal',
+              fontFamily: 'Bodoni 72',
+              fontSize: headerFontSize,
+              letterSpacing: 2,
+            },
+          }}
+        />
+
       </Stack.Navigator>
     </NavigationContainer>
   );
@@ -56,7 +74,7 @@ const StackNav = () => {
 const HomeScreen = ({ navigation }) => {
   return (
 
-      <View style={{flex: 1, flexDirection: 'column', }}>
+      <View style={styles.homeStyle}>
 
         <View style={{flex:1, backgroundColor: 'snow', justifyContent: 'center', alignItems: 'center', }}>
           <Image
@@ -68,9 +86,11 @@ const HomeScreen = ({ navigation }) => {
         <View style={{flex: 1, backgroundColor: 'snow', flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center', }}>
 
 
+        <TouchableOpacity onPress={() => navigation.navigate('Preferences', { name: 'Preferences' })}>
           <Text style={styles.textStyle}>
-            Home Screen
+            Preferences
           </Text>
+        </TouchableOpacity>
 
 
 
@@ -96,6 +116,22 @@ const AboutScreen = ({ navigation, route }) => {
   );
 };
 
+const PreferencesScreen = ({ navigation, route }) => {
+  return (
+    <View>
+
+      <Text style={styles.textStyle}>
+        Home Screen URL
+      </Text>
+
+      <TextInput 
+        defaultValue= "https://upload.wikimedia.org/wikipedia/commons/6/65/George_Washington_Lambert_-_Egg_and_cauliflower_still_life.jpg"
+      />
+
+    </View>
+  );
+};
+
 export default function App() {
   return (
     <StackNav/>
@@ -108,4 +144,8 @@ const styles = StyleSheet.create({
     letterSpacing: 2,
     fontSize: 20,
   },
+  homeStyle: {
+    flex: 1,
+    flexDirection: 'column',
+  }
 });
