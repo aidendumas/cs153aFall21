@@ -1,12 +1,13 @@
 import { StatusBar } from 'expo-status-bar';
 import * as React from 'react';
-import { StyleSheet, Text, View, Button, Image, } from 'react-native';
+import { StyleSheet, Text, View, Button, Image, TouchableOpacity} from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 const Stack = createNativeStackNavigator();
+const headerFontSize = 40;
 
-const MyStack = () => {
+const StackNav = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator>
@@ -23,13 +24,29 @@ const MyStack = () => {
             headerTitleStyle: {
               fontWeight: 'normal',
               fontFamily: 'Bodoni 72',
-              fontSize: 40,
+              fontSize: headerFontSize,
               letterSpacing: 2,
             },
           }}
         />
 
-        <Stack.Screen name="Profile" component={ProfileScreen} />
+        <Stack.Screen
+          name="About"
+          component={AboutScreen}
+          options={{
+            title: 'About',
+            headerStyle: {
+              backgroundColor: 'snow',
+            },
+            headerTintColor: 'black',
+            headerTitleStyle: {
+              fontWeight: 'normal',
+              fontFamily: 'Bodoni 72',
+              fontSize: headerFontSize,
+              letterSpacing: 2,
+            },
+          }}
+        />
 
       </Stack.Navigator>
     </NavigationContainer>
@@ -49,34 +66,39 @@ const HomeScreen = ({ navigation }) => {
         </View>
 
         <View style={{flex: 1, backgroundColor: 'snow', flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center', }}>
-        <Text>
-          home screen
-        </Text>
 
-        <Button style={styles.buttonStyle}
-          title="Go to profile"
-          onPress={() =>
-            navigation.navigate('Profile', { name: 'profile', greeting:'Hi!' })
-               // we're passing a parameter name:'Jane' to the Profile component!
-          }
-        />
+
+          <Text style={styles.textStyle}>
+            Home Screen
+          </Text>
+
+
+
+          <TouchableOpacity onPress={() => navigation.navigate('About', { name: 'About' })}>
+            <Text style={styles.textStyle}>
+              About
+            </Text>
+          </TouchableOpacity>
+
+
         </View>
 
       </View>
 
   );
 };
-const ProfileScreen = ({ navigation, route }) => {
+const AboutScreen = ({ navigation, route }) => {
   return (
     <Text style={styles.textStyle}>
-      profile
+      La Galerie (The Gallery) is an app-in-construction that aims to allow users to create and customize their own art galleries through
+      making their own directories and filling them with images and information from the web
     </Text>
   );
 };
 
 export default function App() {
   return (
-    <MyStack/>
+    <StackNav/>
   );
 }
 
