@@ -100,7 +100,7 @@ const HomeScreen = ({ navigation, route }) => {
         <View style={{flex:1, backgroundColor: 'snow', justifyContent: 'center', alignItems: 'center', }}>
           <Image
             style={{height: "100%", width: "100%", resizeMode: 'contain', }}
-            source={imageURL}
+            source={{uri: imageURL}}
           />
         </View>
 
