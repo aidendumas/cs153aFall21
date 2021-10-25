@@ -1,13 +1,20 @@
 import { StatusBar } from 'expo-status-bar';
-import * as React from 'react';
+import  React, {useState, useEffect} from 'react';
 import { StyleSheet, Text, View, Button, Image, TouchableOpacity, TextInput, } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Stack = createNativeStackNavigator();
 const headerFontSize = 40;
+const defaultURL = 'https://upload.wikimedia.org/wikipedia/commons/6/65/George_Washington_Lambert_-_Egg_and_cauliflower_still_life.jpg';
 
 const StackNav = () => {
+
+
+
+
+
   return (
     <NavigationContainer>
       <Stack.Navigator>
@@ -16,7 +23,7 @@ const StackNav = () => {
           name="Home"
           component={HomeScreen}
           options={{
-            title: 'La Galerie',
+            title: 'Gallery',
             headerStyle: {
               backgroundColor: 'snow',
             },
@@ -71,22 +78,36 @@ const StackNav = () => {
   );
 };
 
-const HomeScreen = ({ navigation }) => {
+const HomeScreen = ({ navigation, route }) => {
+
+  const [imageURL, setImageURL] = useState(defaultURL);
+
+
+
+
+
+  useEffect(() => {
+    if (route.params?.imageURL) {
+      setImageURL(route.params.imageURL)
+
+    }
+  }, [route.params?.imageURL]);
+
   return (
 
       <View style={styles.homeStyle}>
 
         <View style={{flex:1, backgroundColor: 'snow', justifyContent: 'center', alignItems: 'center', }}>
           <Image
-            style={{height:600, width:472, }}
-            source={'https://upload.wikimedia.org/wikipedia/commons/6/65/George_Washington_Lambert_-_Egg_and_cauliflower_still_life.jpg'}
+            style={{height: "100%", width: "100%", resizeMode: 'contain', }}
+            source={imageURL}
           />
         </View>
 
         <View style={{flex: 1, backgroundColor: 'snow', flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center', }}>
 
 
-        <TouchableOpacity onPress={() => navigation.navigate('Preferences', { name: 'Preferences' })}>
+        <TouchableOpacity onPress={() => navigation.navigate('Preferences', { name: 'Preferences', paramKey: imageURL })}>
           <Text style={styles.textStyle}>
             Preferences
           </Text>
@@ -110,13 +131,15 @@ const HomeScreen = ({ navigation }) => {
 const AboutScreen = ({ navigation, route }) => {
   return (
     <Text style={styles.textStyle}>
-      La Galerie (The Gallery) is an app-in-construction that aims to allow users to create and customize their own art galleries through
+      Gallery is an app-in-construction that aims to allow users to create and customize their own art galleries through
       making their own directories and filling them with images and information from the web
     </Text>
   );
 };
 
 const PreferencesScreen = ({ navigation, route }) => {
+
+  const [imageURL, setImageURL] = useState(route.params.paramKey)
   return (
     <View>
 
@@ -124,9 +147,21 @@ const PreferencesScreen = ({ navigation, route }) => {
         Home Screen URL
       </Text>
 
-      <TextInput 
-        defaultValue= "https://upload.wikimedia.org/wikipedia/commons/6/65/George_Washington_Lambert_-_Egg_and_cauliflower_still_life.jpg"
+      <View style={{backgroundColor: 'cornsilk'}}>
+      <TextInput
+        style = {styles.textStyle}
+        defaultValue = {imageURL}
+        onChangeText={text => {setImageURL(text)}}
       />
+      </View>
+
+      <Text>{' '}</Text>
+      <TouchableOpacity onPress={() => navigation.navigate({ name: 'Home', params: { imageURL: imageURL }, merge: true,})}>
+        <Text style={styles.textStyle}>
+          Done
+        </Text>
+      </TouchableOpacity>
+
 
     </View>
   );
