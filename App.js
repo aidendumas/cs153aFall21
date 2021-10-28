@@ -5,6 +5,10 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+import YourGallery from './Components/YourGallery'
+
+
+
 const Stack = createNativeStackNavigator();
 const headerFontSize = 40;
 const defaultURL = 'https://upload.wikimedia.org/wikipedia/commons/6/65/George_Washington_Lambert_-_Egg_and_cauliflower_still_life.jpg';
@@ -73,6 +77,24 @@ const StackNav = () => {
           }}
         />
 
+        <Stack.Screen
+          name="Your Gallery"
+          component={YourGallery}
+          options={{
+            title: 'Your Gallery',
+            headerStyle: {
+              backgroundColor: 'snow',
+            },
+            headerTintColor: 'black',
+            headerTitleStyle: {
+              fontWeight: 'normal',
+              fontFamily: 'Bodoni 72',
+              fontSize: headerFontSize,
+              letterSpacing: 2,
+            },
+          }}
+        />
+
       </Stack.Navigator>
     </NavigationContainer>
   );
@@ -81,17 +103,46 @@ const StackNav = () => {
 const HomeScreen = ({ navigation, route }) => {
 
   const [imageURL, setImageURL] = useState(defaultURL);
+  const [saved, getSaved] = useState(false)
+  const [get, setGet] = useState(false)
+  const [start, setStart] = useState(true)
 
 
 
+  const saveValues = async () => {
+    await AsyncStorage.setItem('custom', imageURL);
+  };
 
+const getValues = async () => {
+  const val = await AsyncStorage.getItem('custom')
+  if (val != null) {
+    setImageURL(val)
+  }
+};
+
+useEffect(() => {
+  if (start) {
+    getValues()
+    setStart(false)
+  }
+});
+
+
+useEffect(() => {
+  if (saved) {
+    saveValues()
+    getSaved(false)
+  }
+});
 
   useEffect(() => {
     if (route.params?.imageURL) {
       setImageURL(route.params.imageURL)
-
+      getSaved(true)
     }
   }, [route.params?.imageURL]);
+
+
 
   return (
 
@@ -110,6 +161,12 @@ const HomeScreen = ({ navigation, route }) => {
         <TouchableOpacity onPress={() => navigation.navigate('Preferences', { name: 'Preferences', paramKey: imageURL })}>
           <Text style={styles.textStyle}>
             Preferences
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={() => navigation.navigate('Your Gallery', { name: 'YourGallery' })}>
+          <Text style={styles.textStyle}>
+            Your Gallery
           </Text>
         </TouchableOpacity>
 
