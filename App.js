@@ -4,7 +4,7 @@ import { StyleSheet, Text, View, Button, Image, TouchableOpacity, TextInput, } f
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import ValueProvider, {useValue} from './Components/ValueContext'
 import YourGallery from './Components/YourGallery'
 
 
@@ -102,6 +102,21 @@ const StackNav = () => {
 
 const HomeScreen = ({ navigation, route }) => {
 
+  const {currentValue, setCurrentValue} = useValue();
+
+  const getGallery = async () => {
+    const val = await AsyncStorage.getItem('gallery')
+    if (val != null) {
+      setCurrentValue({newURL:val})
+    }
+  };
+
+
+  useEffect(() => {
+    getGallery()
+  }, []);
+
+
   const [imageURL, setImageURL] = useState(defaultURL);
   const [saved, getSaved] = useState(false)
   const [get, setGet] = useState(false)
@@ -188,15 +203,76 @@ useEffect(() => {
 const AboutScreen = ({ navigation, route }) => {
   return (
     <Text style={styles.textStyle}>
-      Gallery is an app-in-construction that aims to allow users to create and customize their own art galleries through
-      making their own directories and filling them with images and information from the web
+      Gallery is an app that aims to allow users to create and customize their own art galleries through
+      making their own url directories to not take up local storage
     </Text>
   );
 };
 
-const PreferencesScreen = ({ navigation, route }) => {
+const PreferencesScreen = ({ navigation, route, value, label }) => {
 
   const [imageURL, setImageURL] = useState(route.params.paramKey)
+  const [saved, setSaved] = useState(false)
+  const [newIm, setNewIm] = useState(0)
+  const [clear, setClear] = useState(false)
+
+  const [input, setInput] = useState("")
+
+
+
+  const saveGallery = async () => {
+    await AsyncStorage.setItem('gallery', currentValue.newURL);
+    setSaved(true)
+    setNewIm(newIm+1)
+  };
+
+  const {currentValue, setCurrentValue} = useValue();
+
+  const updateData = () => {
+    saveGallery()
+  }
+
+  const add = () => {
+    setCurrentValue({newURL:currentValue.newURL + input + " "})
+    setInput("")
+    updateData()
+  }
+
+
+  let saveView = <View></View>
+  if (saved) {
+    saveView =
+      <View>
+        <Text style={styles.textStyle}>
+          Saved {newIm} New Images
+        </Text>
+      </View>
+  }
+
+  let clearView = <View></View>
+  if (clear) {
+    clearView =
+      <View>
+        <Text style={styles.textStyle}>
+          Gallery has Been Emptied
+        </Text>
+      </View>
+  }
+
+
+
+  const navPress = () => {
+    setSaved(false)
+    setNewIm(0)
+    navigation.navigate({ name: 'Home', params: { imageURL: imageURL }, merge: true,})
+  }
+
+  const clearData = async () => {
+    await AsyncStorage.clear()
+    setCurrentValue({newURL:""})
+    setClear(true)
+  }
+
   return (
     <View>
 
@@ -213,11 +289,56 @@ const PreferencesScreen = ({ navigation, route }) => {
       </View>
 
       <Text>{' '}</Text>
-      <TouchableOpacity onPress={() => navigation.navigate({ name: 'Home', params: { imageURL: imageURL }, merge: true,})}>
+      <TouchableOpacity onPress={() => navPress()}>
         <Text style={styles.textStyle}>
           Done
         </Text>
       </TouchableOpacity>
+
+      <Text>{" "}</Text>
+
+      <Text style={styles.textStyle}>
+        Add Image URL for Gallery
+      </Text>
+
+      <View style={{backgroundColor: 'cornsilk'}}>
+      <TextInput
+        style = {styles.textStyle}
+        value = {input}
+        onChangeText={text => {setInput(text)}}
+      />
+      </View>
+
+      <Text>{' '}</Text>
+      <TouchableOpacity onPress={() => add()}>
+        <Text style={styles.textStyle}>
+          Done
+        </Text>
+      </TouchableOpacity>
+
+      <Text>
+        {" "}
+      </Text>
+      {saveView}
+
+      <Text>
+        {" "}
+      </Text>
+
+      <TouchableOpacity onPress={() => clearData()}>
+        <Text style={styles.textStyle}>
+          Clear All Data
+        </Text>
+      </TouchableOpacity>
+
+      <Text>
+        {" "}
+      </Text>
+
+      {clearView}
+
+
+
 
 
     </View>
@@ -225,8 +346,15 @@ const PreferencesScreen = ({ navigation, route }) => {
 };
 
 export default function App() {
+
+
+
+  const contextData = {newURL: ""}
+
   return (
-    <StackNav/>
+    <ValueProvider value={contextData}>
+      <StackNav/>
+    </ValueProvider>
   );
 }
 
