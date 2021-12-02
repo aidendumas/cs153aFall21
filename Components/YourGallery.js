@@ -38,7 +38,6 @@ const YourGallery = ({ navigation, route, value, label }) => {
     <View style={{flex:1}}>
       <ImageBackground source={{uri: backgroundWall}} resizeMode='cover' style={{flex: 1, justifyContent:'center'}}>
         <FlatList
-          numColumns={4}
           data={(currentValue.newURL).split(' ')}
           renderItem={renderItem}
           keyExtractor={item => item.created_at}
